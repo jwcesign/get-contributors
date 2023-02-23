@@ -1,0 +1,45 @@
+name: Get contributors
+
+on:
+  workflow_call:
+    inputs:
+      repo:
+        required: true
+        type: string
+      start:
+        required: true
+        type: string
+      end:
+        required: true
+        type: string
+      exclude_contributor:
+        required: false
+        type: string
+
+jobs:
+  get-contributors:
+    name: Get contributors
+    runs-on: "ubuntu-latest"
+  
+    steps:
+      - name: download images
+        run: |
+          set -x
+
+          docker pull cesign/get-contributors:latest
+      
+      - name: get contributors
+        run: |
+          set -x
+
+          exclude_contributor=${{ inputs.exclude_contributor }}
+          if [[ $exclude_contributor != "" ]]; then
+            docker run cesign/get-contributors:latest get-contributors --repo ${{ inputs.repo }} \
+              --start ${{ inputs.start }} \
+              --end ${{ inputs.end }} \
+              --exclude_contributor $exclude_contributor
+          else
+            docker run cesign/get-contributors:latest get-contributors --repo ${{ inputs.repo }} \
+              --start ${{ inputs.start }} \
+              --end ${{ inputs.end }}
+          fi
